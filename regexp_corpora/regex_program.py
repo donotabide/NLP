@@ -57,7 +57,7 @@ for line in f_in:
 	if len(n_line) != len(line):
 		f_out_currency_list.write(n_line+"\n")
 		match = currency_pattern.search(line)
-		f_out_currency_match.write(str(match.group())[1:-1] + "\n")
+		f_out_currency_match.write(match.group(1) + "\n")
 
 f_out_currency.close()
 f_out_currency_list.close()
@@ -72,14 +72,21 @@ f_in = open("test_dollar_phone_corpus.txt")
 # pattern for phones
 phone_patterns = re.compile(r"""						
 (
-	[\b]						
-	([-\.\(\[]]?
-	\d{3}				# XXXXXX000-0000
-	[-\s\.\)\]]?)?
-	\s?
-	\d{3}				# 0(000)XXXX0000
-	[-\.]\d{4}					# 0(000)0000XXXX
-	((([\.,\s]{1,4})|([eE][xX][tT]))\d{4})?							#? ext|. XXXX
+	(
+		[\.\(\[\-]?
+		(\d{3})					# XXXXXX000-0000
+		[\s\.\)\]\-]?
+		(\s?)
+	)?
+	(\d{3})						# 0(000)XXXX0000
+	\D
+	(\d{4})						# 0(000)0000XXXX
+	(
+		[\.,\s]*
+		([eE][xX][tT])
+	)?
+	(\d*)?
+	$						
 )
 """, re.VERBOSE)
 
@@ -95,9 +102,8 @@ for line in f_in:
 	if len(n_line) != len(line):
 		f_out_phone_list.write(n_line+"\n")
 		match = phone_patterns.search(line)
-		f_out_phone_match.write(str(match.group())[1:-1]+"\n")
-
-
+		f_out_phone_match.write(match.group(1)+"\n")
+		
 f_out_phone.close()
 f_out_phone_list.close()
 f_out_phone_match.close()
